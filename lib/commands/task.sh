@@ -95,7 +95,7 @@ cmd_task() {
 
     if [ "$no_wait" = "true" ]; then
         # Fire and forget — dispatch without waiting for response
-        python3 - "$port" "$token" "$prompt" "$agent" <<'PY'
+        python3 -u - "$port" "$token" "$prompt" "$agent" <<'PY'
 import subprocess, sys, json
 
 port, token, prompt, agent = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
@@ -125,7 +125,7 @@ PY
     local outcome="success"
     echo -e "  ${CLR_DIM}────────────────────────────────────────${CLR_RESET}"
 
-    python3 - "$port" "$token" "$prompt" "$agent" "$timeout_min" <<'PY'
+    python3 -u - "$port" "$token" "$prompt" "$agent" "$timeout_min" <<'PY'
 import subprocess, sys, json, signal, time
 
 port       = sys.argv[1]

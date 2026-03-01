@@ -32,7 +32,7 @@ cmd_steer() {
     fleet_log_steer "$agent"
 
     # Send to the same session used by fleet task
-    python3 - "$port" "$token" "$message" "$agent" <<'PY'
+    python3 -u - "$port" "$token" "$message" "$agent" <<'PY'
 import subprocess, sys, json
 
 port, token, message, agent = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]

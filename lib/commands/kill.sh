@@ -52,7 +52,7 @@ cmd_kill() {
         stop_message="[FLEET KILL FORCE] Immediately stop all activity. Do not complete current task. Archive session now. Confirm with: FORCE STOPPED."
     fi
 
-    python3 - "$port" "$token" "$stop_message" "$agent" <<'PY'
+    python3 -u - "$port" "$token" "$stop_message" "$agent" <<'PY'
 import subprocess, sys, json, time
 
 port, token, message, agent = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]

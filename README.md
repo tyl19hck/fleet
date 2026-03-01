@@ -60,6 +60,10 @@ See what changed. Dispatch tasks. Learn which agents actually deliver, and route
 - [Why Fleet?](#why-fleet)
 - [Quick Start](#quick-start)
 - [Commands](#commands)
+  - [Dispatch](#dispatch)
+  - [Monitoring](#monitoring)
+  - [Development](#development)
+  - [Operations](#operations)
 - [Patterns](#patterns)
 - [Configuration](#configuration)
 - [Environment Variables](#environment-variables)
@@ -91,6 +95,17 @@ fleet sitrep
 
 ## Commands
 
+### Dispatch
+
+| Command | Description |
+|---------|-------------|
+| `fleet task <agent> "<prompt>"` | Dispatch a task to an agent, stream response live |
+| `fleet steer <agent> "<message>"` | Send a mid-session correction to a running agent |
+| `fleet watch <agent>` | Live session tail — polls every 3s, shows new messages as they arrive |
+| `fleet parallel "<task>"` | Decompose into subtasks, assign by type, dispatch all concurrently |
+| `fleet kill <agent>` | Send a graceful stop signal to an agent session |
+| `fleet log` | Append-only structured log of all dispatches and outcomes |
+
 ### Monitoring
 
 | Command | Description |
@@ -116,7 +131,121 @@ fleet sitrep
 | `fleet init` | Interactive setup with gateway detection |
 
 <details>
-<summary><strong>See more command output examples</strong></summary>
+<summary><strong>See command output examples</strong></summary>
+
+#### `fleet task coder "add pagination to /api/spots, cursor-based, include tests"`
+
+```
+Fleet Task
+──────────
+  Agent     coder (port 48520)
+  Type      code
+  Task ID   a1b2c3d4
+  Timeout   30m
+
+  add pagination to /api/spots, cursor-based, include tests
+
+  ────────────────────────────────────────
+  I'll add cursor-based pagination to the /api/spots endpoint.
+
+  Starting with the database query layer...
+  [streams response in real time until complete]
+  ────────────────────────────────────────
+  ✅  Task complete  (a1b2c3d4)
+```
+
+#### `fleet steer coder "also add a max_limit cap of 100 per page"`
+
+```
+Fleet Steer
+───────────
+  Agent    coder
+  Session  fleet-coder
+
+  also add a max_limit cap of 100 per page
+
+  ────────────────────────────────────────
+  Good call. Adding MAX_LIMIT = 100 guard at the top of the handler...
+  ────────────────────────────────────────
+  ✅  Steered.
+```
+
+#### `fleet watch coordinator`
+
+```
+Watching coordinator
+────────────────────
+  Session: main · polling every 3s · Ctrl+C to stop
+
+  Connecting to coordinator session...
+  Last 3 message(s):
+
+  coordinator (claude-sonnet-4-6)  15:10 UTC
+  Running fleet sitrep...
+
+  you  15:23 UTC
+  build the pricing page
+
+  coordinator (claude-sonnet-4-6)  15:24 UTC
+  On it. Reading the Stripe config first...
+```
+
+#### `fleet parallel "research competitor pricing and build a pricing page with tiers" --dry-run`
+
+```
+Fleet Parallel
+──────────────
+  Task: research competitor pricing and build a pricing page with tiers
+
+  Execution plan:
+
+  1. researcher    [research]
+     Research phase: research competitor pricing and build a pricing page with tiers
+
+  2. coder         [code]
+     Implementation: research competitor pricing and build a pricing page with tiers
+
+  ────────────────────────────────────────
+  2 subtask(s) ready to dispatch in parallel.
+
+  ℹ️  Dry run complete. Remove --dry-run to execute.
+```
+
+#### `fleet log`
+
+```
+Fleet Log  3 entries
+
+  i9j0k1l2  coder        code      pending  ⤷1 steer
+  2026-03-01 15:30  refactor auth middleware to use JWT RS256 instead of HS256
+
+  e5f6g7h8  researcher   research  success  8m43s
+  2026-03-01 15:10  analyze top 3 competitor pricing models in the surf social space
+
+  a1b2c3d4  coder        code      success  12m17s
+  2026-03-01 15:10  add pagination to /api/spots endpoint with cursor-based approach...
+```
+
+#### `fleet log --agent coder --outcome success`
+
+```
+Fleet Log  2 entries
+
+  a1b2c3d4  coder        code      success  12m17s
+  2026-03-01 15:10  add pagination to /api/spots endpoint with cursor-based approach...
+```
+
+#### `fleet kill coder`
+
+```
+Fleet Kill
+──────────
+  Agent    coder
+  Session  fleet-coder
+
+  ✅  Agent coder acknowledged stop signal.
+  ✅  Kill signal sent to coder.
+```
 
 #### `fleet agents`
 
@@ -289,8 +418,14 @@ fleet/
 │       ├── ci.sh           # GitHub CI integration
 │       ├── health.sh       # Endpoint health checks
 │       ├── init.sh         # Interactive setup
+│       ├── kill.sh         # Graceful agent stop
+│       ├── log.sh          # Append-only dispatch log
+│       ├── parallel.sh     # Parallel task decomposition
 │       ├── sitrep.sh       # Structured status reports
-│       └── skills.sh       # ClawHub skill listing
+│       ├── skills.sh       # ClawHub skill listing
+│       ├── steer.sh        # Mid-session corrections
+│       ├── task.sh         # Task dispatch to agents
+│       └── watch.sh        # Live session tail
 ├── templates/configs/      # Config templates
 ├── examples/               # Architecture pattern examples
 │   ├── solo-empire/
@@ -332,15 +467,15 @@ Fleet is being built in stages. Each version makes it more active, more intellig
 ### v1 · Shipped ✅
 Visibility layer. Monitoring, delta SITREP, CI status, backup, audit. Fleet can see the entire operation.
 
-### v2 · Active (task dispatch and session steering)
+### v2 · Shipped ✅ (task dispatch and session steering)
 Fleet stops being observational and becomes directive.
 
-- [ ] `fleet log` — append-only structured log of everything dispatched and received (built first, foundation for everything else)
-- [ ] `fleet task <agent> "<prompt>"` — dispatch a task to any agent from the CLI, with timeout and result capture
-- [ ] `fleet watch <agent>` — live log tail from a specific agent session
-- [ ] `fleet steer <agent> "<message>"` — send a mid-session correction to a running agent
-- [ ] `fleet kill <agent>` — graceful session end
-- [ ] `fleet parallel "<task>"` — break a high-level task into subtasks, assign to agents, run in parallel (with `--dry-run` to review decomposition before executing)
+- [x] `fleet log` — append-only structured log of everything dispatched and received (built first, foundation for everything else)
+- [x] `fleet task <agent> "<prompt>"` — dispatch a task to any agent from the CLI, with timeout and result capture
+- [x] `fleet watch <agent>` — live log tail from a specific agent session
+- [x] `fleet steer <agent> "<message>"` — send a mid-session correction to a running agent
+- [x] `fleet kill <agent>` — graceful session end
+- [x] `fleet parallel "<task>"` — break a high-level task into subtasks, assign to agents, run in parallel (with `--dry-run` to review decomposition before executing)
 
 ### v3 · Planned (reliability scoring and agent trust)
 Fleet learns which agents actually deliver, not just which ones are alive.
