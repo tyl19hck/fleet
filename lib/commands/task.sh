@@ -99,12 +99,11 @@ cmd_task() {
 import subprocess, sys, json
 
 port, token, prompt, agent = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
-session_user = f"fleet-{agent}"
+session_key = f"fleet-{agent}"
 
 payload = json.dumps({
     "model": "openclaw",
     "messages": [{"role": "user", "content": prompt}],
-    "user": session_user,
 })
 
 subprocess.Popen(
@@ -112,6 +111,7 @@ subprocess.Popen(
      f"http://127.0.0.1:{port}/v1/chat/completions",
      "-H", f"Authorization: Bearer {token}",
      "-H", "Content-Type: application/json",
+     "-H", f"x-openclaw-session-key: {session_key}",
      "-d", payload],
     close_fds=True
 )
@@ -133,7 +133,7 @@ token      = sys.argv[2]
 prompt     = sys.argv[3]
 agent      = sys.argv[4]
 timeout_s  = int(sys.argv[5]) * 60
-session_user = f"fleet-{agent}"
+session_key = f"fleet-{agent}"
 
 G = "\033[32m"; R = "\033[31m"; D = "\033[2m"; N = "\033[0m"; BOLD = "\033[1m"
 
@@ -141,7 +141,6 @@ payload = json.dumps({
     "model": "openclaw",
     "stream": True,
     "messages": [{"role": "user", "content": prompt}],
-    "user": session_user,
 })
 
 cmd = [
@@ -149,6 +148,7 @@ cmd = [
     f"http://127.0.0.1:{port}/v1/chat/completions",
     "-H", f"Authorization: Bearer {token}",
     "-H", "Content-Type: application/json",
+    "-H", f"x-openclaw-session-key: {session_key}",
     "-d", payload,
 ]
 

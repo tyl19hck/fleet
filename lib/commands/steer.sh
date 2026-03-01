@@ -36,7 +36,7 @@ cmd_steer() {
 import subprocess, sys, json
 
 port, token, message, agent = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
-session_user = f"fleet-{agent}"
+session_key = f"fleet-{agent}"
 
 G = "\033[32m"; R = "\033[31m"; D = "\033[2m"; N = "\033[0m"
 
@@ -44,7 +44,6 @@ payload = json.dumps({
     "model": "openclaw",
     "stream": True,
     "messages": [{"role": "user", "content": message}],
-    "user": session_user,
 })
 
 cmd = [
@@ -52,6 +51,7 @@ cmd = [
     f"http://127.0.0.1:{port}/v1/chat/completions",
     "-H", f"Authorization: Bearer {token}",
     "-H", "Content-Type: application/json",
+    "-H", f"x-openclaw-session-key: {session_key}",
     "-d", payload,
 ]
 

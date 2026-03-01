@@ -199,14 +199,13 @@ def run_subtask(st):
         return
 
     task_id = str(uuid.uuid4())[:8]
-    session_user = f"fleet-{agent_name}"
+    session_key = f"fleet-{agent_name}"
     dispatched_at = now_ts()
     log_entry(task_id, agent_name, task_type, prompt, dispatched_at)
 
     payload = json.dumps({
         "model": "openclaw",
         "messages": [{"role": "user", "content": prompt}],
-        "user": session_user,
     })
 
     with lock:
@@ -218,6 +217,7 @@ def run_subtask(st):
              f"http://127.0.0.1:{port}/v1/chat/completions",
              "-H", f"Authorization: Bearer {token}",
              "-H", "Content-Type: application/json",
+             "-H", f"x-openclaw-session-key: {session_key}",
              "-d", payload],
             capture_output=True, text=True, timeout=timeout_s + 5
         )
